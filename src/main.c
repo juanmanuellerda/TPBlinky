@@ -8,98 +8,21 @@
  ******************************************************************************
  */
 
-#include "stm32f4xx.h"
-#include "stm32f4_discovery.h"
+#include "bspTP1/bspTP1.h"
 
-void delay(uint16_t delay);
-
-#define LED_NARANJA GPIO_PIN_13
-#define LED_VERDE GPIO_PIN_12
-#define LED_ROJO GPIO_PIN_14
-#define LED_AZUL GPIO_PIN_15
-#define LEDS_PORT GPIOD
-
-#define LLAVE GPIO_PIN_0
-#define LLAVE_PORT GPIOA
+uint8_t colorRGB = 0;
 
 int main(void) {
 
-	__GPIOD_CLK_ENABLE()
-	;
-	__GPIOA_CLK_ENABLE()
-	;
-
-	GPIO_InitTypeDef GPIO_Init;
-
-	GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_Init.Pull = GPIO_NOPULL;
-	GPIO_Init.Speed = GPIO_SPEED_FAST;
-
-	GPIO_Init.Pin = LED_AZUL | LED_ROJO | LED_NARANJA | LED_VERDE;
-	HAL_GPIO_Init(LEDS_PORT, &GPIO_Init);
-
-	GPIO_Init.Mode = GPIO_MODE_INPUT;
-	GPIO_Init.Pull = GPIO_NOPULL;
-	GPIO_Init.Speed = GPIO_SPEED_FAST;
-
-	GPIO_Init.Pin = LLAVE;
-	HAL_GPIO_Init(LLAVE_PORT, &GPIO_Init);
+	BSP_Init();
 
 	while (1) {
 
-		if (HAL_GPIO_ReadPin(LLAVE_PORT, LLAVE) == 0) {
-			delay(0xFFFF);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_AZUL, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_ROJO, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_NARANJA, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_VERDE, GPIO_PIN_RESET);
-			delay(0xFFFF);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_AZUL, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_ROJO, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_NARANJA, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_VERDE, GPIO_PIN_RESET);
-			delay(0xFFFF);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_AZUL, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_ROJO, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_NARANJA, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_VERDE, GPIO_PIN_RESET);
-			delay(0xFFFF);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_AZUL, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_ROJO, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_NARANJA, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_VERDE, GPIO_PIN_SET);
+		colorRGB = BSP_GetBrightness(); //leo el ADC y lo guardo en brighness
 
-		} else {
-			delay(0xFFFF);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_AZUL, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_ROJO, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_NARANJA, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_VERDE, GPIO_PIN_SET);
-			delay(0xFFFF);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_AZUL, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_ROJO, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_NARANJA, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_VERDE, GPIO_PIN_RESET);
-			delay(0xFFFF);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_AZUL, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_ROJO, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_NARANJA, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_VERDE, GPIO_PIN_RESET);
-			delay(0xFFFF);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_AZUL, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_ROJO, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_NARANJA, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LEDS_PORT, LED_VERDE, GPIO_PIN_RESET);
+		led_setBrightRojo(LED_ROJO, colorRGB); //llamo a cada funcion de cada color
+		led_setBrightVerde(LED_VERDE, colorRGB);
+		led_setBrightAzul(LED_AZUL, colorRGB);
 		}
-
-	}
 }
 
-void delay(uint16_t delay) {
-	uint16_t i = 0xFFFF;
-	while (i) {
-		while (delay)
-			delay--;
-		i--;
-	}
-}
